@@ -1,8 +1,7 @@
 package com.oracle.jdbc.t1;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +14,9 @@ public class FriendSearch extends JFrame {
     private JButton  list,delete,add;
     private JTable  table;
     private TableModel  model;
+    private JScrollPane scrollPane;
+    private TableColumnModel  columnModel;
+    private Object[] columnNames={"名","姓","工资","邮箱"};;
     public FriendSearch(){
         setSize(400,400);
         setResizable(false);
@@ -24,7 +26,6 @@ public class FriendSearch extends JFrame {
         setVisible(true);
         setLayout(null);
         initComponent();
-        paintComponents(getGraphics());
         paintAll(getGraphics());
     }
     public void initComponent(){
@@ -45,21 +46,23 @@ public class FriendSearch extends JFrame {
                    //3.建立会话
                    Statement sta=con.createStatement();
                    //4.使用会话对象发起sql语句操作数据库
+                   ResultSet countResult=sta.executeQuery("select count(*) from hr.employees");
+
+                   countResult.next();
+                   int allCount=countResult.getInt(1);
+                   model=new DefaultTableModel(columnNames,allCount);
                    ResultSet rs=sta.executeQuery("select *  from hr.employees");
-                   int rowno=1;
+                   int rowno=0;
                    //5.提取结果
                    while(rs.next()){
                        model.setValueAt(rs.getString("first_name"),rowno,0);
                        model.setValueAt(rs.getString("last_name"),rowno,1);
                        model.setValueAt(rs.getString("salary"),rowno,2);
                        model.setValueAt(rs.getString("email"),rowno,3);
+//                       model.setValueAt(rs.getString("phone_number"),rowno,4);
                        rowno++;
-//                       System.out.print(rs.getString("first_name")+",");
-//                       System.out.print(rs.getString("last_name")+",");
-//                       System.out.print(rs.getString("salary")+",");
-//                       System.out.print(rs.getString("email"));
-//                       System.out.println();
                    }
+                   table.setModel(model);
                    //6.业务执行完毕后，关闭jdbc各个对象
                    rs.close();
                    sta.close();
@@ -77,13 +80,14 @@ public class FriendSearch extends JFrame {
         this.add(list);
         this.add(delete);
         this.add(add);
-        Object[] columnNames={"first_name","last_name","salary","emil","phone_number"};
-        model=new DefaultTableModel(columnNames,100);
+
+        model=new DefaultTableModel(columnNames,0);
         table=new JTable(model);
-        table.setModel(model);
-        table.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-        table.setBounds(10,40,380,320);
-        this.add(table);
+        table.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+        scrollPane=new JScrollPane(table);
+        scrollPane.setBounds(10,40,380,320);
+        this.add(scrollPane);
 
     }
 
