@@ -15,14 +15,12 @@ public class FriendSearch extends JFrame {
     private JTable  table;
     private TableModel  model;
     private JScrollPane scrollPane;
-    private TableColumnModel  columnModel;
-    private Object[] columnNames={"名","姓","工资","邮箱"};;
+    private Object[] columnNames={"员工编号","员工姓名","员工工资","员工邮箱"};;
     public FriendSearch(){
         setSize(400,400);
         setResizable(false);
         setTitle("搜索好友");
         setLocationRelativeTo(null);
-        setAlwaysOnTop(true);
         setVisible(true);
         setLayout(null);
         initComponent();
@@ -42,7 +40,6 @@ public class FriendSearch extends JFrame {
                    String password="test";
                    //2.建立链接
                    Connection con= DriverManager.getConnection(url,username,password);
-                   System.out.println(con);
                    //3.建立会话
                    Statement sta=con.createStatement();
                    //4.使用会话对象发起sql语句操作数据库
@@ -55,14 +52,16 @@ public class FriendSearch extends JFrame {
                    int rowno=0;
                    //5.提取结果
                    while(rs.next()){
-                       model.setValueAt(rs.getString("first_name"),rowno,0);
-                       model.setValueAt(rs.getString("last_name"),rowno,1);
+                       model.setValueAt(rs.getString("employee_id"),rowno,0);
+                       model.setValueAt(rs.getString("first_name")+" "+rs.getString("last_name"),rowno,1);
                        model.setValueAt(rs.getString("salary"),rowno,2);
                        model.setValueAt(rs.getString("email"),rowno,3);
 //                       model.setValueAt(rs.getString("phone_number"),rowno,4);
                        rowno++;
                    }
                    table.setModel(model);
+
+                   table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
                    //6.业务执行完毕后，关闭jdbc各个对象
                    rs.close();
                    sta.close();
